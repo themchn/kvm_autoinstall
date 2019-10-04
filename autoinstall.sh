@@ -79,6 +79,7 @@ sed -e 's/IPADDRESS/'"$assignedip"'/
 # Third Section
 # Create logical volumes
 # TODO: figure out what you want to do if a lv already exists
+# TODO: make the lvcreate more portable instead of hardcoded
 lvcreate -ay -L 10G -n "$hostname"-root hostssd
 lvcreate -ay -L 1G -n "$hostname"-swap hostssd
 
