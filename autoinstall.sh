@@ -6,24 +6,26 @@
 
 # Set cwd of script
 script_dir="$(dirname $0 | sed 's|^\./|/|')"
-script_tmp=""$script_dir"/tmp"
-
-# Location of preseed, postinstall files
-preseed=""$script_tmp"/preseed.cfg"
-postinstallfiles=""$script_tmp"/postinstall.tar.gz"
+script_realpath="$(realpath "$script_dir")"
+script_tmp=""$script_realpath"/tmp"
 
 # Get cloudflare credentials
-cf_creds=""$script_dir"/cloudflare_creds.ini"
+cf_creds=""$script_realpath"/cloudflare_creds.ini"
 cf_email="$(awk '/cloudflare_email/{print $3}' "$cf_creds")"
 cf_key="$(awk '/cloudflare_api_key/{print $3}' "$cf_creds")"
 cf_zone="$(awk '/cloudflare_zone_id/{print $3}' "$cf_creds")"
 
 # Create postinstall file archive
 mkdir "$script_tmp"
-cd "$script_dir"/postinstallfiles
+cd "$script_realpath"/postinstallfiles
 tar -czf postinstall.tar.gz ./*
 mv ./postinstall.tar.gz "$script_tmp"
-cd "$script_dir"
+cd "$script_realpath"
+#cp -f "$script_realpath"/preseed.cfg "$script_tmp"/
+
+# Location of preseed, postinstall files
+preseed=""$script_tmp"/preseed.cfg"
+postinstallfiles=""$script_tmp"/postinstall.tar.gz"
 
 # TODO: Add flag to specify custom preseed and postinstall files.
 # TODO: Configuration a file to pull Cloudflare credentials from.
@@ -75,7 +77,7 @@ assignedip=$(comm <( printf '%s\n' "${usedips[@]}" | sort ) <( printf '%s\n' "${
 sed -e 's/IPADDRESS/'"$assignedip"'/
         s/NETMASK/'"$netmask"'/
         s/GATEWAY/'"$gateway"'/
-        s/HOSTNAME/'"$hostname"'/'  $preseed > "$script_tmp"/preseed.cfg
+        s/HOSTNAME/'"$hostname"'/'  "$script_realpath"/preseed.cfg > "$script_tmp"/preseed.cfg
 # Third Section
 # Create logical volumes
 # TODO: figure out what you want to do if a lv already exists
@@ -109,8 +111,8 @@ virt-install \
     --noautoconsole \
     --wait=-1 \
     --location  http://deb.debian.org/debian/dists/buster/main/installer-amd64/ \
-    --initrd-inject "$script_tmp"/preseed.cfg \
-    --initrd-inject $postinstallfiles \
+    --initrd-inject "$preseed" \
+    --initrd-inject "$postinstallfiles" \
     --extra-args="auto priority=critical"
 
 # Create dns record for new subdomain with cloudflare
@@ -126,4 +128,4 @@ fi
 virsh metadata "$hostname" custom.libvirt.metadata --config --key network --set "<ipConfig><ipAddress>"$assignedip"</ipAddress></ipConfig>"
 
 # Cleanup
-rm -r "$script_tmp"
+#rm -r "$script_tmp"
