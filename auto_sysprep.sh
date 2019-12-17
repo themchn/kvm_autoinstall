@@ -96,7 +96,7 @@ virt-sysprep \
     -a /dev/hostssd/"$hostname"-root
 
 virt-install \
-	--import \
+    --import \
     --os-variant=debian10 \
     --hvm \
     --virt-type=kvm \
