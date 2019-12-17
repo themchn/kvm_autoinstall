@@ -87,13 +87,13 @@ echo "System "$hostname" will be assigned "$assignedip""
 dd if=/dev/hostssd/debian10template of=/dev/hostssd/"$hostname"-root bs=16M status=progress
 
 virt-sysprep \
-	--hostname "$hostname" \
-	--network \
-	--update \
-	--run-command "sed -i -e \"s/ADDRESS/"$assignedip"/\" -e \"s/GATEWAY/"$gateway"/\" -e \"s/NETMASK/"$netmask"/\" /etc/network/interfaces" \
+    --hostname "$hostname" \
+    --network \
+    --update \
+    --run-command "sed -i -e \"s/ADDRESS/"$assignedip"/\" -e \"s/GATEWAY/"$gateway"/\" -e \"s/NETMASK/"$netmask"/\" /etc/network/interfaces" \
     --run-command "printf \"# swap\nUUID=\"$swap_uuid\"\tnone\tswap\tsw\t0\t0\" >> /etc/fstab" \
-	--firstboot-command 'dpkg-reconfigure openssh-server && dpkg-reconfigure resolvconf && systemctl restart sshd' \
-	-a /dev/hostssd/"$hostname"-root
+    --firstboot-command 'dpkg-reconfigure openssh-server && dpkg-reconfigure resolvconf && systemctl restart sshd' \
+    -a /dev/hostssd/"$hostname"-root
 
 virt-install \
 	--import \
