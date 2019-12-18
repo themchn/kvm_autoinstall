@@ -84,7 +84,6 @@ virt-sysprep \
     --run-command "echo -e \"nameserver 1.1.1.1\" > /etc/resolv.conf"
     --run-command "printf \"# swap\nUUID=\"$swap_uuid\"\tnone\tswap\tsw\t0\t0\n\" >> /etc/fstab" \
     --firstboot-command "dpkg-reconfigure openssh-server && systemctl restart sshd" \
-    --firstboot-command "chown -R themachine:themachine /home/themachine ; chown -R root:netdata /etc/netdata" \
     -a /dev/hostssd/"$hostname"-root
 
 virt-install \
