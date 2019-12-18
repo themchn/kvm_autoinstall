@@ -68,8 +68,6 @@ swap_uuid="$(mkswap /dev/hostssd/control-swap | grep UUID | cut -d"=" -f2)"
 echo "Installation beginning"
 echo "System "$hostname" will be assigned "$assignedip""
 
-dd if=/dev/hostssd/debian10template of=/dev/hostssd/"$hostname"-root bs=16M status=progress
-
 virt-sysprep \
     --hostname "$hostname" \
     --network \
