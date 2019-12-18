@@ -7,28 +7,12 @@
 # Set cwd of script
 script_dir="$(dirname $0 | sed 's|^\./|/|')"
 script_realpath="$(realpath "$script_dir")"
-script_tmp=""$script_realpath"/tmp"
 
 # Get cloudflare credentials
 cf_creds=""$script_realpath"/cloudflare_creds.ini"
 cf_email="$(awk '/cloudflare_email/{print $3}' "$cf_creds")"
 cf_key="$(awk '/cloudflare_api_key/{print $3}' "$cf_creds")"
 cf_zone="$(awk '/cloudflare_zone_id/{print $3}' "$cf_creds")"
-
-# Create postinstall file archive
-#mkdir "$script_tmp"
-#cd "$script_realpath"/postinstallfiles
-#tar -czf postinstall.tar.gz ./*
-#mv ./postinstall.tar.gz "$script_tmp"
-#cd "$script_realpath"
-#cp -f "$script_realpath"/preseed.cfg "$script_tmp"/
-
-# Location of preseed, postinstall files
-preseed=""$script_tmp"/preseed.cfg"
-postinstallfiles=""$script_tmp"/postinstall.tar.gz"
-
-# TODO: Add flag to specify custom preseed and postinstall files.
-# TODO: Configuration a file to pull Cloudflare credentials from.
 
 # Basic input args
 # Currently these are REQUIRED
