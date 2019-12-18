@@ -68,22 +68,24 @@ swap_uuid="$(mkswap /dev/hostssd/control-swap | grep UUID | cut -d"=" -f2)"
 echo "Installation beginning"
 echo "System "$hostname" will be assigned "$assignedip""
 
-virt-sysprep \
+
+virt-builder debian-10 \
     --hostname "$hostname" \
     --network \
     --update \
     --install "htop,vim,sudo,curl" \
-    --copy-in "/sharedfs/debian/etc:/" \
-    --copy-in "/sharedfs/debian/root:/" \
-    --copy-in "/sharedfs/debian/opt:/" \
-    --copy-in "/sharedfs/debian/home:/" \
+    --copy-in "/sharedfs/vm_config_files/debian/etc:/" \
+    --copy-in "/sharedfs/vm_config_files/debian/root:/" \
+    --copy-in "/sharedfs/vm_config_files/debian/opt:/" \
+    --copy-in "/sharedfs/vm_config_files/debian/home:/" \
     --copy-in "/sharedfs/letsencrypt:/etc/ssl/certs/" \
     --run-command "mkdir /sharedfs" \
     --run-command "sed -i -e \"s/ADDRESS/"$assignedip"/\" -e \"s/GATEWAY/"$gateway"/\" -e \"s/NETMASK/"$netmask"/\" /etc/network/interfaces" \
-    --run-command "echo -e \"nameserver 1.1.1.1\" > /etc/resolv.conf"
+    --run-command "echo -e \"nameserver 1.1.1.1\" > /etc/resolv.conf" \
     --run-command "printf \"# swap\nUUID=\"$swap_uuid\"\tnone\tswap\tsw\t0\t0\n\" >> /etc/fstab" \
     --firstboot-command "dpkg-reconfigure openssh-server && systemctl restart sshd" \
-    -a /dev/hostssd/"$hostname"-root
+    --firstboot-command "bash /root/postinstall.sh" \
+    -o /dev/hostssd/"$hostname"-root
 
 virt-install \
     --import \
