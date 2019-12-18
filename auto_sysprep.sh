@@ -79,7 +79,6 @@ virt-sysprep \
     --copy-in "/sharedfs/debian/home:/" \
     --copy-in "/sharedfs/letsencrypt:/etc/ssl/certs/" \
     --run-command "mkdir /sharedfs" \
-    --run-command "chown -R themachine:themachine /home/themachine ; chown -R root:netdata /etc/netdata" \
     --run-command "sed -i -e \"s/ADDRESS/"$assignedip"/\" -e \"s/GATEWAY/"$gateway"/\" -e \"s/NETMASK/"$netmask"/\" /etc/network/interfaces" \
     --run-command "echo -e \"nameserver 1.1.1.1\" > /etc/resolv.conf"
     --run-command "printf \"# swap\nUUID=\"$swap_uuid\"\tnone\tswap\tsw\t0\t0\n\" >> /etc/fstab" \
