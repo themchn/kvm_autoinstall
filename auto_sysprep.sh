@@ -74,9 +74,19 @@ virt-sysprep \
     --hostname "$hostname" \
     --network \
     --update \
+    --install "htop,vim,sudo,curl" \
+    --copy-in "/sharedfs/debian/etc:/" \
+    --copy-in "/sharedfs/debian/root:/" \
+    --copy-in "/sharedfs/debian/opt:/" \
+    --copy-in "/sharedfs/debian/home:/" \
+    --copy-in "/sharedfs/letsencrypt:/etc/ssl/certs/" \
+    --run-command "mkdir /sharedfs" \
+    --run-command "chown -R themachine:themachine /home/themachine ; chown -R root:netdata /etc/netdata" \
     --run-command "sed -i -e \"s/ADDRESS/"$assignedip"/\" -e \"s/GATEWAY/"$gateway"/\" -e \"s/NETMASK/"$netmask"/\" /etc/network/interfaces" \
-    --run-command "printf \"# swap\nUUID=\"$swap_uuid\"\tnone\tswap\tsw\t0\t0\" >> /etc/fstab" \
-    --firstboot-command 'dpkg-reconfigure openssh-server && dpkg-reconfigure resolvconf && systemctl restart sshd' \
+    --run-command "echo -e \"nameserver 1.1.1.1\" > /etc/resolv.conf"
+    --run-command "printf \"# swap\nUUID=\"$swap_uuid\"\tnone\tswap\tsw\t0\t0\n\" >> /etc/fstab" \
+    --firstboot-command "dpkg-reconfigure openssh-server && systemctl restart sshd" \
+    --firstboot-command "chown -R themachine:themachine /home/themachine ; chown -R root:netdata /etc/netdata" \
     -a /dev/hostssd/"$hostname"-root
 
 virt-install \
