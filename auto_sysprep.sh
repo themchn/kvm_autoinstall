@@ -62,24 +62,23 @@ assignedip=$(comm <( printf '%s\n' "${usedips[@]}" | sort ) <( printf '%s\n' "${
 # TODO: make the lvcreate more portable instead of hardcoded
 lvcreate -ay -L 10G -n "$hostname"-root hostssd
 lvcreate -ay -L 1G -n "$hostname"-swap hostssd
-swap_uuid="$(mkswap /dev/hostssd/control-swap | grep UUID | cut -d"=" -f2)"
+swap_uuid="$(mkswap /dev/hostssd/"$hostname"-swap | grep UUID | cut -d"=" -f2)"
 
 # print some details
 echo "Installation beginning"
 echo "System "$hostname" will be assigned "$assignedip""
 
-
+# Begin install
 virt-builder debian-10 \
     --hostname "$hostname" \
     --network \
     --update \
-    --install "htop,vim,sudo,curl" \
+    --install "htop,vim,sudo,curl,nfs-common,git,rsync" \
     --copy-in "/sharedfs/vm_config_files/debian/etc:/" \
     --copy-in "/sharedfs/vm_config_files/debian/root:/" \
     --copy-in "/sharedfs/vm_config_files/debian/opt:/" \
     --copy-in "/sharedfs/vm_config_files/debian/home:/" \
     --copy-in "/sharedfs/letsencrypt:/etc/ssl/certs/" \
-    --run-command "mkdir /sharedfs" \
     --run-command "sed -i -e \"s/ADDRESS/"$assignedip"/\" -e \"s/GATEWAY/"$gateway"/\" -e \"s/NETMASK/"$netmask"/\" /etc/network/interfaces" \
     --run-command "echo -e \"nameserver 1.1.1.1\" > /etc/resolv.conf" \
     --run-command "printf \"# swap\nUUID=\"$swap_uuid\"\tnone\tswap\tsw\t0\t0\n\" >> /etc/fstab" \
