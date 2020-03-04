@@ -24,7 +24,7 @@ ipassignment="$3"
 # TODO: check that required information was provided
 
 # Create array from cloudflare json output for specified domain
-readarray -t cf_domain_info < <(curl -s -X GET "https://api.cloudflare.com/client/v4/zones/"$cf_zone"/dns_records?&type=A&name="$hostname"."$domain"" \
+readarray cf_domain_info < <(curl -s -X GET "https://api.cloudflare.com/client/v4/zones/"$cf_zone"/dns_records?&type=A&name="$hostname"."$domain"" \
     -H "Content-Type:application/json" \
     -H "X-Auth-Key:"$cf_key"" \
     -H "X-Auth-Email:"$cf_email"" | json_pp)
